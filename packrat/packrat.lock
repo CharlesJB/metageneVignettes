@@ -79,6 +79,16 @@ Version: 2.0.1
 Hash: cafa694d528e8fd77e0273c8c05f3ffc
 Requires: BiocGenerics, S4Vectors
 
+Package: KernSmooth
+Source: CRAN
+Version: 2.23-14
+Hash: 87b98ddc596cc8d65f6ef7598bb36cb4
+
+Package: MASS
+Source: CRAN
+Version: 7.3-39
+Hash: 07a460fafc264e456aa1e7ae661a7194
+
 Package: R6
 Source: CRAN
 Version: 2.0.1
@@ -162,6 +172,11 @@ Source: CRAN
 Version: 1.5.1
 Hash: 689bd4825149d4f791ce0fe5d259e62d
 
+Package: codetools
+Source: CRAN
+Version: 0.2-11
+Hash: 9d480bf9a178632e1b7d6d6df6aaaf1a
+
 Package: colorspace
 Source: CRAN
 Version: 1.2-6
@@ -200,7 +215,7 @@ Package: foreach
 Source: CRAN
 Version: 1.4.2
 Hash: fbdaa99f6c6bd4f252c5d8412f6e79c9
-Requires: iterators
+Requires: codetools, iterators
 
 Package: formatR
 Source: CRAN
@@ -217,13 +232,13 @@ Package: ggplot2
 Source: CRAN
 Version: 1.0.1
 Hash: 06a8e5faacfd76c9e4ab11a5b7ad94d6
-Requires: digest, gtable, plyr, proto, reshape2, scales
+Requires: MASS, digest, gtable, plyr, proto, reshape2, scales
 
 Package: gplots
 Source: CRAN
 Version: 2.16.0
 Hash: 8c3b6bc2847ba429e8966dd724f259c4
-Requires: caTools, gdata, gtools
+Requires: KernSmooth, caTools, gdata, gtools
 
 Package: gtable
 Source: CRAN
@@ -278,6 +293,17 @@ Source: CRAN
 Version: 0.2.1
 Hash: fc52fa39dfd216c44d64812ff31b1c67
 Requires: digest
+
+Package: metagene
+Source: github
+Version: 1.99.8
+Hash: 075384b6a3b9483e281f1826271d15b50a738629
+Requires: BiocParallel, GenomicAlignments, GenomicRanges, R6,
+    Rsamtools, biomaRt, ggplot2, gplots, rtracklayer
+GithubRepo: metagene
+GithubUsername: charlesjb
+GithubRef: master
+GithubSha1: 075384b6a3b9483e281f1826271d15b50a738629
 
 Package: mime
 Source: CRAN
