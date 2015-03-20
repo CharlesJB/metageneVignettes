@@ -6,3 +6,8 @@ packrat/src*/
 .Rbuildignore
 .Rprofile
 inst/extdata/E114_18_core_K27ac_mnemonics.bed.gz
+*.bam*
+cache*
+figure*
+*.html
+*.md

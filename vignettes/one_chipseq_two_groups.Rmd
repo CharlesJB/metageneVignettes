@@ -1,0 +1,121 @@
+---
+title: "Design: Two groups of regions in one ChIP-Seq"
+author: "Charles Joly Beauparlant"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Design: Two groups of regions in one ChIP-Seq}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## 0. Load package
+
+```{r loadPackage}
+suppressMessages(library(packrat))
+packrat::on("../")
+suppressMessages(library(metagene))
+```
+
+## 1. Introduction
+
+There are 2 kind of experimental designs that can be used for a `metagene`
+analysis. This document will introduce the first kind, which is the comparison
+of two groups of regions from the same ChIP-Seq sample.
+
+For this vignette, we will compare the enrichment of the H3K27ac histone mark in
+two groups of transcription start sites (TSS): active and bivalent.
+
+http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state
+
+## 2. Load datasets
+
+We will use the TSS as defined by the Roadmap Consortium (TODO: add ref), for
+more details on how the data were downloaded, please see the R/get_regions.R file.
+
+```{r loadTSS}
+#data(TssA)   # Active TSS
+#data(TssBiv) # Bivalent TSS
+load("../data/TssA.RData")   # Active TSS
+load("../data/TssBiv.RData") # Bivalent TSS
+
+# We will make sure that all the regions have the same size to avoid having to
+# scale them during the metagene analysis
+TssA <- GenomicRanges::resize(TssA, 1000, fix = "center")
+TssBiv <- GenomicRanges::resize(TssBiv, 1000, fix = "center")
+regions <- GenomicRanges::GRangesList(TssA, TssBiv)
+names(regions) <- c("TssA", "TssBiv")
+regions
+```
+
+For the ChIP-Seq of the H3K27ac histone mark, we will use the [Add accessions]
+file from ENCODE. The `ENCFF000AKF.bam` and `ENCFF000AKI.bam` files are two
+replicates from the same experiment and `ENCFF000AHC.bam` and `ENCFF000AHD.bam`
+are the recommanded control files.
+
+```{r addENCODEfile}
+bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
+               "../inst/extdata/ENCFF000AKI.bam",
+               "../inst/extdata/ENCFF000AHC.bam",
+               "../inst/extdata/ENCFF000AHD.bam")
+bam_files
+```
+
+Since multiple samples should be included in the same profile (we need to
+combine the replicates and remove the control), we have to produce a design so
+that `metagene` can know how to deal correctly with each file.
+
+```{r produceDesign}
+design <- data.frame(samples = bam_files, H3K27ac = c(1,1,2,2))
+design
+```
+
+## 3. metagene analysis
+
+The design is not used when we call the constructor of metagene (using
+`metagene$new`). The goal of this first step is to extract the coverage from
+the bam_files and to do the normalisation of the signal. Since this step can
+be computationally intensive, we do not want to do it every time we want to
+experiment with a new design. Thus, it is a good idea to extract the coverage
+from every bam file in a single step, save the result in `RData` format and
+then explore different design.
+
+```{r metageneAnalysis, cache=TRUE}
+mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
+# We could save this object to avoid re-doing this computationally intensive
+# step:
+#save(mg, file = "mg.RData")
+```
+
+## 4. Produce the graphs
+
+The `plot` function allows you to create the `metagene` plot. By default, the
+plot will contain a profile for every combination of group of regions and bam
+file. In this vignette, we have 2 groups of regions (`TssA` and `TssBiv`) and
+4 bam files (2 samples and 2 controls).
+
+Since in this case, we only want to produce a profile for the `TssA` and
+`TssBiv` groups of regions, we will have to use the design we produced
+previously. Other than the `samples` column that contains the names  of the bam
+files, there is only one column in the `design` object. This means that there
+will only be 1 profile plotted for each group of regions (2 profiles in this
+example).
+
+```{r produceGraph}
+df <- mg$plot(design = design, bin_size = 10)
+save(mg, file = "mg.RData")
+```
+
+If we only wanted to plot the profile for one group of region, we could have
+specified it using the `regions_group` parameter. This parameter is a vector of
+the names of the regions we want to keep for the current `metagene` plot.
+
+```{r produceGraphTssA}
+df <- mg$plot(design = design, regions_group = "TssA")
+```
+
+Note: In the case that we used a `GRangesList` for the group of regions when
+the `new` function was used, we have to use the same name as the one from this
+object. If we specified a vector of filename, metagene will automatically name
+the region using the filename without the directory path and without the
+extension.
