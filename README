@@ -1,0 +1,6 @@
+# README
+
+## Build the vignettes
+```
+Rscript R/build_vignettes "vignettes/<name_of_the_vignette>"
+```
