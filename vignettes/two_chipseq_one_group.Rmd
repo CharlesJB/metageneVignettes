@@ -1,10 +1,10 @@
 ---
-title: "Design: Two groups of regions in one ChIP-Seq"
+title: "Design: One group of regions in two ChIP-Seq"
 author: "Charles Joly Beauparlant"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Design: Two groups of regions in one ChIP-Seq}
+  %\VignetteIndexEntry{Design: One group of regions in two ChIP-Seq}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -20,11 +20,11 @@ suppressMessages(library(metagene))
 ## 1. Introduction
 
 There are 2 kind of experimental designs that can be used for a `metagene`
-analysis. This document will introduce the first kind, which is the comparison
-of two groups of regions from the same ChIP-Seq sample.
+analysis. This document will introduce the second kind, which is the comparison
+of the same group of regions between 2 ChIP-Seq experiment.
 
-For this vignette, we will compare the enrichment of the H3K27ac histone mark in
-two groups of transcription start sites (TSS): active and bivalent.
+For this vignette, we will compare the enrichment of the H3K27ac and H4K27me3
+histone mark in active transcription start sites (TSS).
 
 http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state
 
@@ -35,16 +35,16 @@ more details on how the data were downloaded, please see the R/get_regions.R fil
 
 ```{r loadTSS}
 #data(TssA)   # Active TSS
-#data(TssBiv) # Bivalent TSS
 load("../data/TssA.RData")   # Active TSS
-load("../data/TssBiv.RData") # Bivalent TSS
 
 # We will make sure that all the regions have the same size to avoid having to
 # scale them during the metagene analysis
-TssA <- GenomicRanges::resize(TssA, 500, fix = "center")
-TssBiv <- GenomicRanges::resize(TssBiv, 500, fix = "center")
-regions <- GenomicRanges::GRangesList(TssA, TssBiv)
-names(regions) <- c("TssA", "TssBiv")
+TssA <- GenomicRanges::resize(TssA, 1000, fix = "center")
+regions <- GenomicRanges::GRangesList(TssA)
+names(regions) <- c("TssA")
+
+# We need to remove values from chrY that are not present in some bam files
+regions <- lapply(regions, function(x) x[seqnames(x) != "chrY"])
 
 # For memory and speed consideration, we will only use a subset of the regions
 regions <- lapply(regions, function(x) x[sample(seq_along(x), 1000)])
@@ -60,17 +60,19 @@ are the recommanded control files.
 ```{r addENCODEfile}
 bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
                "../inst/extdata/ENCFF000AKI.bam",
-               "../inst/extdata/ENCFF000AHC.bam",
-               "../inst/extdata/ENCFF000AHD.bam")
+               "../inst/extdata/ENCFF000VGB.bam",
+               "../inst/extdata/ENCFF000VFS.bam")
 bam_files
 ```
 
 Since multiple samples should be included in the same profile (we need to
-combine the replicates and remove the control), we have to produce a design so
-that `metagene` can know how to deal correctly with each file.
+combine the replicates), we have to produce a design so that `metagene` can
+know how to deal correctly with each file.
 
 ```{r produceDesign}
-design <- data.frame(samples = bam_files, H3K27ac = c(1,1,2,2))
+design <- data.frame(samples = bam_files,
+                     H3K27ac = c(1,1,0,0),
+                     H3K27me3 = c(0,0,1,1))
 design
 ```
 
@@ -85,7 +87,8 @@ from every bam file in a single step, save the result in `RData` format and
 then explore different design.
 
 ```{r metageneAnalysis}
-mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
+#mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
+mg <- metagene$new(regions = regions, bam_files = bam_files)
 # We could save this object to avoid re-doing this computationally intensive
 # step:
 #save(mg, file = "mg.RData")
@@ -95,31 +98,15 @@ mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
 
 The `plot` function allows you to create the `metagene` plot. By default, the
 plot will contain a profile for every combination of group of regions and bam
-file. In this vignette, we have 2 groups of regions (`TssA` and `TssBiv`) and
-4 bam files (2 samples and 2 controls).
+file. In this vignette, we have 4 bam files (2 replicates for H3K27ac and 2
+replicates for H3K27me3) and one group of regions (`TssA`). Which means that if
+we do not use a design, metagene will produce 4 profiles.
 
-Since in this case, we only want to produce a profile for the `TssA` and
-`TssBiv` groups of regions, we will have to use the design we produced
-previously. Other than the `samples` column that contains the names  of the bam
-files, there is only one column in the `design` object. This means that there
-will only be 1 profile plotted for each group of regions (2 profiles in this
-example).
+In this case, we only want to produce a profile for each histone mark (i.e. we
+want to combine the replicates), we have defined the groups of bam files in the
+design.
 
 ```{r produceGraph}
 df <- mg$plot(design = design, bin_size = 10)
 save(mg, file = "mg.RData")
 ```
-
-If we only wanted to plot the profile for one group of region, we could have
-specified it using the `regions_group` parameter. This parameter is a vector of
-the names of the regions we want to keep for the current `metagene` plot.
-
-```{r produceGraphTssA}
-df <- mg$plot(design = design, regions_group = "TssA")
-```
-
-Note: In the case that we used a `GRangesList` for the group of regions when
-the `new` function was used, we have to use the same name as the one from this
-object. If we specified a vector of filename, metagene will automatically name
-the region using the filename without the directory path and without the
-extension.

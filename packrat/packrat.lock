@@ -282,18 +282,23 @@ Requires: digest
 Package: metagene
 Source: github
 Version: 1.99.8
-Hash: 192de933c7bab2e3908350c0ee09e7d11dfed7d0
+Hash: a7daf13ec908ea9911a05e06a95882ad7fc4d061
 Requires: BiocParallel, GenomicAlignments, GenomicRanges, R6,
-    Rsamtools, biomaRt, ggplot2, gplots, rtracklayer
+    Rsamtools, biomaRt, ggplot2, gplots, muStat, rtracklayer
 GithubRepo: metagene
 GithubUsername: charlesjb
 GithubRef: master
-GithubSha1: 192de933c7bab2e3908350c0ee09e7d11dfed7d0
+GithubSha1: a7daf13ec908ea9911a05e06a95882ad7fc4d061
 
 Package: mime
 Source: CRAN
 Version: 0.2
 Hash: 9179db921fcb2e5be44e217042ed06bc
+
+Package: muStat
+Source: CRAN
+Version: 1.7.0
+Hash: 71571e574869822df281cf4911b5baea
 
 Package: munsell
 Source: CRAN
