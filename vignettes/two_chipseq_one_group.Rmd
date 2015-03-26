@@ -1,6 +1,6 @@
 ---
 title: "Design: One group of regions in two ChIP-Seq"
-author: "Charles Joly Beauparlant"
+author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,7 +9,25 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## 0. Load package
+# Enrichment of the H3K27ac and H4K27me3 histone marks in active transcription start sites (TSS)
+
+## 1. Introduction
+
+There are 2 kinds of experimental designs that can be used for a `metagene`
+analysis. This document will introduce the second kind, which is the comparison
+of the same group of regions between 2 ChIP-Seq experiments.
+
+_metagene_  was used to robustly test for the difference in the enrichment of 
+the H3K27ac and H4K27me3 histones marks, for the same active transcription start 
+sites (TSS), in in A549 cells. More information about those data can be 
+found here : <br> 
+[http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state](http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state)
+
+
+### 1. Load _metagene_ package
+
+In R, we must first load the _packrat_ package, which enable data usage, and 
+_metagene_ package:
 
 ```{r loadPackage}
 suppressMessages(library(packrat))
@@ -17,21 +35,14 @@ packrat::on("../")
 suppressMessages(library(metagene))
 ```
 
-## 1. Introduction
 
-There are 2 kind of experimental designs that can be used for a `metagene`
-analysis. This document will introduce the second kind, which is the comparison
-of the same group of regions between 2 ChIP-Seq experiment.
+## 2. Load TSS of interests
 
-For this vignette, we will compare the enrichment of the H3K27ac and H4K27me3
-histone mark in active transcription start sites (TSS).
+We will use the TSS as defined by the Roadmap Consortium (Romanoski _et al._, 
+2015). For more details on how the data were downloaded, please see the 
+_R/get_regions.R_ file.
 
-http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state
-
-## 2. Load datasets
-
-We will use the TSS as defined by the Roadmap Consortium (TODO: add ref), for
-more details on how the data were downloaded, please see the R/get_regions.R file.
+Only one groupe of active TSS will be used.
 
 ```{r loadTSS}
 #data(TssA)   # Active TSS
