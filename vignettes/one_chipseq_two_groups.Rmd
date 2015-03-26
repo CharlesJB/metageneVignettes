@@ -135,13 +135,17 @@ samples column that contains the names of the BAM files, there is only one
 column in the `design` object. This means that there will only be 1 profile 
 plotted for each group of regions (2 profiles in this example).
 
+The `metagene` object can be saved and reused.
+
 ```{r produceGraph}
 df <- mg$plot(design = design, bin_size = 10)
 save(mg, file = "mg.RData")
 ```
 
-The `metagene` object can be saved and reused.
-
+_metagene_ has statistically detected differences between the TssA and TssBiv 
+groups using Friedman rank sum test. Evenmore, _metagene_ has robustly
+computed conﬁdence intervals (CI) of the estimators (mean) for each bin using 
+a bootstrap method.
 
 ### 7. _metagene_ graph TssA only
 
