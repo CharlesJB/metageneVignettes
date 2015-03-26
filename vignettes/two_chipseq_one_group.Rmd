@@ -11,7 +11,7 @@ vignette: >
 
 # Enrichment of the H3K27ac and H4K27me3 histone marks in active transcription start sites (TSS)
 
-## 1. Introduction
+## Introduction
 
 There are 2 kinds of experimental designs that can be used for a `metagene`
 analysis. This document will introduce the second kind, which is the comparison
@@ -36,7 +36,7 @@ suppressMessages(library(metagene))
 ```
 
 
-## 2. Load TSS of interests
+### 2. Load TSS of interests
 
 We will use the TSS as defined by the Roadmap Consortium (Romanoski _et al._, 
 2015). For more details on how the data were downloaded, please see the 
@@ -103,15 +103,16 @@ design
 The `design` uses the value `1` for a dataset and `2` for a control.
 
 
-## 3. metagene analysis
+### 5. _metagene_ analysis
 
-The design is not used when we call the constructor of metagene (using
-`metagene$new`). The goal of this first step is to extract the coverage from
-the bam_files and to do the normalisation of the signal. Since this step can
-be computationally intensive, we do not want to do it every time we want to
-experiment with a new design. Thus, it is a good idea to extract the coverage
-from every bam file in a single step, save the result in `RData` format and
-then explore different design.
+The first step is to create a `metagene` object using `metagene$new()` 
+function. The goal of this first _metagene_ step is to extract the coverage 
+from all BAM files present in the `bam_files` object and to normalize the 
+signal. Since this step can be computationally intensive, we do not want to do 
+it every time we want to experiment with a new design. Thus, it is a good idea 
+to extract the coverage from every BAM files in a single step, save the 
+results in `RData` format and then explore different designs. The `design` 
+object will be used in next steps..
 
 ```{r metageneAnalysis}
 #mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
@@ -121,19 +122,36 @@ mg <- metagene$new(regions = regions, bam_files = bam_files)
 #save(mg, file = "mg.RData")
 ```
 
-## 4. Produce the graphs
+### 6. _metagene_ graph H3K27ac vs H3K27me3
 
-The `plot` function allows you to create the `metagene` plot. By default, the
-plot will contain a profile for every combination of group of regions and bam
-file. In this vignette, we have 4 bam files (2 replicates for H3K27ac and 2
-replicates for H3K27me3) and one group of regions (`TssA`). Which means that if
-we do not use a design, metagene will produce 4 profiles.
+The `plot()` function allows us to create a _metagene_ graph. By default, the 
+graph will contain a profile for each combination of group of regions and BAM 
+file. In this vignette, we have 4 BAM files (2 replicates for H3K27ac and 2
+replicates for H3K27me3) and one group of regions (`TssA`). It means that if
+we do not use a design, _metagene_ will produce 4 profiles.
 
 In this case, we only want to produce a profile for each histone mark (i.e. we
-want to combine the replicates), we have defined the groups of bam files in the
-design.
+want to combine the replicates). The groups of BAM files have already been 
+defined in the `design` object (see step 4).
 
 ```{r produceGraph}
 df <- mg$plot(design = design, bin_size = 10)
 save(mg, file = "mg.RData")
 ```
+
+_metagene_ has statistically detected differences between those two histone
+marks profiles using Friedman rank sum test. Evenmore, _metagene_ has robustly
+computed conﬁdence intervals (CI) of the estimators (mean) for each bin using 
+a bootstrap method.
+
+
+## References 
+
+ENCODE Project Consortium (2012). An integrated encyclopedia of DNA elements in 
+the human genome. Nature, 489: 57–74. doi: 10.1038/nature11247. pmid:22955616 
+
+Roadmap Epigenomics Consortium et al. (2015). Integrative analysis of 111 
+reference human epigenomes. Nature, 518: 317–330.
+
+Romanoski, C. E. et al. (2015). Epigenomics: Roadmap for regulation. Nature, 
+518: 314–316. doi: 10.1038/518314a. pmid:25693562
