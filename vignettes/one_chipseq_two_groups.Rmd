@@ -151,10 +151,12 @@ a bootstrap method.
 
 If we only wanted to plot the profile for one group of region, we could have
 specified it using the `regions_group` parameter. This parameter is a vector of
-the names of the regions we want to keep for the current `metagene` plot.
+the names of the regions we want to keep for the current `metagene` plot. The 
+`list` returned by the `plot()` function can be saved and reused.
 
 ```{r produceGraphTssA}
 df <- mg$plot(design = design, regions_group = "TssA")
+save(df, file = "df.RData")
 ```
 
 Note: When a `GRangesList` object is used for the group of regions in
