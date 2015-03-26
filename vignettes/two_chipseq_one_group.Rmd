@@ -31,7 +31,7 @@ _metagene_ package:
 
 ```{r loadPackage}
 suppressMessages(library(packrat))
-packrat::on("../")
+#packrat::on("../")
 suppressMessages(library(metagene))
 ```
 
@@ -63,10 +63,18 @@ regions <- GenomicRanges::GRangesList(regions)
 regions
 ```
 
-For the ChIP-Seq of the H3K27ac histone mark, we will use the [Add accessions]
-file from ENCODE. The `ENCFF000AKF.bam` and `ENCFF000AKI.bam` files are two
-replicates from the same experiment and `ENCFF000AHC.bam` and `ENCFF000AHD.bam`
-are the recommanded control files.
+
+### 3. Loading ChIP-Seq datasets
+
+For the ChIP-Seq of the H3K27ac histone marks, we will use the `ENCFF000AKF` and
+`ENCFF000AKI` files from ENCODE (ENCODE Project Consortium, 2012). The 
+`ENCFF000AKF.bam` and `ENCFF000AKI.bam` files 
+are two replicates from the same experiment.
+
+For the ChIP-Seq of the H3K27me3 histone marks, we will use the `ENCFF000AHC` 
+and `ENCFF000AHD` files from ENCODE (ENCODE Project Consortium, 2012). The 
+`ENCFF000AHC.bam` and `ENCFF000AHD.bam` files 
+are also two replicates from the same experiment.
 
 ```{r addENCODEfile}
 bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
