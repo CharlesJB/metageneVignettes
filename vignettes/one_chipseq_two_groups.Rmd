@@ -92,7 +92,7 @@ The _bam_files_ object should have 4 elements.
 ### 4. Experimental design
 
 Multiple samples should be included in the same profile. Replicates need to be
-combine while controls have to be used as background. The design has to be 
+combined while controls have to be used as background. The design has to be 
 constructed so that `metagene` will process correctly each file.
 
 ```{r produceDesign}
