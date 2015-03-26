@@ -1,6 +1,6 @@
 ---
 title: "Design: Two groups of regions in one ChIP-Seq"
-author: "Charles Joly Beauparlant"
+author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,7 +9,29 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## 0. Load package
+# Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) #
+
+## Introduction
+
+There are 2 kinds of experimental designs that can be used for a _metagene_ 
+analysis. This document will introduce the first kind, which is the comparison 
+of two groups of regions from the same ChIP-Seq sample. It also illustrates 
+how _metagene_ can statistically test differences between groups of profiles 
+within an experiment.
+
+
+The H3K27ac histone mark is normally enriched at active compared to poised 
+transcriptional start sites (TSS) (Roadmap Epigenomics Consortium et al.,2015).
+_metagene_  was used to robustly test for the difference in enrichment of 
+H3K27ac between these two groups of promoter regions in A549 cells. More 
+information about those data can be found here : <br> 
+[http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state](http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state)
+
+
+### 1. Load _metagene_ package
+
+In R, we must first load the _packrat_ package, which enable data usage, and 
+_metagene_ package:
 
 ```{r loadPackage}
 suppressMessages(library(packrat))
@@ -17,21 +39,14 @@ packrat::on("../")
 suppressMessages(library(metagene))
 ```
 
-## 1. Introduction
 
-There are 2 kind of experimental designs that can be used for a `metagene`
-analysis. This document will introduce the first kind, which is the comparison
-of two groups of regions from the same ChIP-Seq sample.
+## 2. Load TSS of interests
 
-For this vignette, we will compare the enrichment of the H3K27ac histone mark in
-two groups of transcription start sites (TSS): active and bivalent.
+We will use the TSS as defined by the Roadmap Consortium 
+(Romanoski _et al._, 2015). For more details on how the data have been 
+downloaded, please see the `R/get_regions.R` file. 
 
-http://egg2.wustl.edu/roadmap/web_portal/chr_state_learning.html#exp_18state
-
-## 2. Load datasets
-
-We will use the TSS as defined by the Roadmap Consortium (TODO: add ref), for
-more details on how the data were downloaded, please see the R/get_regions.R file.
+Two groups of regions, active and bivalent TSS, will be used.
 
 ```{r loadTSS}
 #data(TssA)   # Active TSS
@@ -52,10 +67,16 @@ regions <- GenomicRanges::GRangesList(regions)
 regions
 ```
 
-For the ChIP-Seq of the H3K27ac histone mark, we will use the [Add accessions]
-file from ENCODE. The `ENCFF000AKF.bam` and `ENCFF000AKI.bam` files are two
-replicates from the same experiment and `ENCFF000AHC.bam` and `ENCFF000AHD.bam`
-are the recommanded control files.
+
+### 3. Loading ChIP-Seq datasets
+
+r the ChIP-Seq of the H3K27ac histone mark, we will use the `ENCFF000AKF`, 
+`ENCFF000AKI`, `ENCFF000AHC` and  `ENCFF000AHD` files from ENCODE 
+(ENCODE Project Consortium, 2012). 
+
+The `ENCFF000AKF.bam` and `ENCFF000AKI.bam` 
+files are two replicates from the same experiment and `ENCFF000AHC.bam` and 
+`ENCFF000AHD.bam` are the recommended control files.
 
 ```{r addENCODEfile}
 bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
@@ -65,24 +86,33 @@ bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
 bam_files
 ```
 
-Since multiple samples should be included in the same profile (we need to
-combine the replicates and remove the control), we have to produce a design so
-that `metagene` can know how to deal correctly with each file.
+The _bam_files_ object should have 4 elements.
+
+
+### 4. Experimental design
+
+Multiple samples should be included in the same profile. Replicates need to be
+combine while controls have to be used as background. The design has to be 
+constructed so that `metagene` will process correctly each file.
 
 ```{r produceDesign}
 design <- data.frame(samples = bam_files, H3K27ac = c(1,1,2,2))
 design
 ```
 
-## 3. metagene analysis
+The `design` uses the value `1` for a dataset and `2` for a control.
 
-The design is not used when we call the constructor of metagene (using
-`metagene$new`). The goal of this first step is to extract the coverage from
-the bam_files and to do the normalisation of the signal. Since this step can
-be computationally intensive, we do not want to do it every time we want to
-experiment with a new design. Thus, it is a good idea to extract the coverage
-from every bam file in a single step, save the result in `RData` format and
-then explore different design.
+
+## 3. _metagene_ analysis
+
+The first step is to create a `metagene` object using `metagene$new()` 
+function. The goal of this first _metagene_ step is to extract the coverage 
+from all BAM files present in the `bam_files` object and to normalize the 
+signal. Since this step can be computationally intensive, we do not want to do 
+it every time we want to experiment with a new design. Thus, it is a good idea 
+to extract the coverage from every BAM files in a single step, save the 
+results in `RData` format and then explore different designs. The `design` 
+object will be used in next steps.
 
 ```{r metageneAnalysis}
 mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
@@ -91,24 +121,29 @@ mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
 #save(mg, file = "mg.RData")
 ```
 
-## 4. Produce the graphs
 
-The `plot` function allows you to create the `metagene` plot. By default, the
-plot will contain a profile for every combination of group of regions and bam
-file. In this vignette, we have 2 groups of regions (`TssA` and `TssBiv`) and
-4 bam files (2 samples and 2 controls).
+## 4. _metagene_ graph TssA vs TssBis
 
-Since in this case, we only want to produce a profile for the `TssA` and
-`TssBiv` groups of regions, we will have to use the design we produced
-previously. Other than the `samples` column that contains the names  of the bam
-files, there is only one column in the `design` object. This means that there
-will only be 1 profile plotted for each group of regions (2 profiles in this
-example).
+The `plot()` function allows us to create a _metagene_ graph. By default, the 
+graph will contain a profile for each combination of group of regions and BAM 
+file. In this example, we have 2 groups of regions (TssA and TssBiv) and 4 BAM 
+files (2 samples and 2 controls).
+
+Since we only want to produce a single profile for the TssA and TssBiv groups 
+of regions, we have to use the `design` produced previously. Other than the 
+samples column that contains the names of the BAM files, there is only one 
+column in the `design` object. This means that there will only be 1 profile 
+plotted for each group of regions (2 profiles in this example).
 
 ```{r produceGraph}
 df <- mg$plot(design = design, bin_size = 10)
 save(mg, file = "mg.RData")
 ```
+
+The `metagene` object can be saved and reused.
+
+
+### 5. _metagene_ graph TssA only
 
 If we only wanted to plot the profile for one group of region, we could have
 specified it using the `regions_group` parameter. This parameter is a vector of
@@ -118,8 +153,21 @@ the names of the regions we want to keep for the current `metagene` plot.
 df <- mg$plot(design = design, regions_group = "TssA")
 ```
 
-Note: In the case that we used a `GRangesList` for the group of regions when
-the `new` function was used, we have to use the same name as the one from this
-object. If we specified a vector of filename, metagene will automatically name
-the region using the filename without the directory path and without the
-extension.
+Note: When a `GRangesList` object is used for the group of regions in
+the `new()` function, the exact same name as to be used in the `plot()` 
+function for the `regions_group` parameter. If we specified a vector of 
+filename, _metagene_ will automatically name the region using the filename 
+without the directory path and without the extension.
+
+
+## References 
+
+ENCODE Project Consortium (2012). An integrated encyclopedia of DNA elements in 
+the human genome. Nature, 489: 57–74. doi: 10.1038/nature11247. pmid:22955616 
+
+Roadmap Epigenomics Consortium et al. (2015). Integrative analysis of 111 
+reference human epigenomes. Nature, 518: 317–330.
+
+Romanoski, C. E. et al. (2015). Epigenomics: Roadmap for regulation. Nature, 
+518: 314–316. doi: 10.1038/518314a. pmid:25693562
+
