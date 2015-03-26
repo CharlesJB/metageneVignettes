@@ -9,8 +9,8 @@ Repos: CRAN=http://cran.rstudio.com/,
 
 Package: AnnotationDbi
 Source: Bioconductor
-Version: 1.28.1
-Hash: 38657d0dfc21cb7ae48f498e11212e42
+Version: 1.28.2
+Hash: 07df738e1f0c6c3924e3e3d3c5ec6d08
 Requires: Biobase, BiocGenerics, DBI, GenomeInfoDb, RSQLite, S4Vectors
 
 Package: BBmisc
@@ -21,8 +21,8 @@ Requires: checkmate
 
 Package: BatchJobs
 Source: CRAN
-Version: 1.5
-Hash: 9008830ac169960c1741699b7bfdf1b9
+Version: 1.6
+Hash: 5f5e3053ecb2cc5a8dd894d0446fc144
 Requires: BBmisc, DBI, RSQLite, brew, checkmate, digest, fail,
     sendmailR, stringr
 
@@ -36,6 +36,11 @@ Package: BiocGenerics
 Source: Bioconductor
 Version: 0.12.1
 Hash: 87ec9b94ce0544cb5730b6567d266994
+
+Package: BiocInstaller
+Source: Bioconductor
+Version: 1.16.2
+Hash: a0989445c36918fb37c12a2708065b75
 
 Package: BiocParallel
 Source: Bioconductor
@@ -159,8 +164,8 @@ Requires: bitops
 
 Package: checkmate
 Source: CRAN
-Version: 1.5.1
-Hash: 689bd4825149d4f791ce0fe5d259e62d
+Version: 1.5.2
+Hash: 06a22198c165adff2e2ccb5ff11a6441
 
 Package: colorspace
 Source: CRAN
