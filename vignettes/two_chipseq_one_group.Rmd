@@ -84,9 +84,14 @@ bam_files <- c("../inst/extdata/ENCFF000AKF.bam",
 bam_files
 ```
 
-Since multiple samples should be included in the same profile (we need to
-combine the replicates), we have to produce a design so that `metagene` can
-know how to deal correctly with each file.
+The _bam_files_ object should have 4 elements.
+
+
+### 4. Experimental design
+
+Multiple samples should be included in the same profile. Replicates need to be
+combined. On group is created for each histone. The design has to be 
+constructed so that `metagene` will process correctly each file.
 
 ```{r produceDesign}
 design <- data.frame(samples = bam_files,
@@ -94,6 +99,9 @@ design <- data.frame(samples = bam_files,
                      H3K27me3 = c(0,0,1,1))
 design
 ```
+
+The `design` uses the value `1` for a dataset and `2` for a control.
+
 
 ## 3. metagene analysis
 
