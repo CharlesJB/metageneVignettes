@@ -40,7 +40,7 @@ suppressMessages(library(metagene))
 ```
 
 
-## 2. Load TSS of interests
+### 2. Load TSS of interests
 
 We will use the TSS as defined by the Roadmap Consortium 
 (Romanoski _et al._, 2015). For more details on how the data have been 
@@ -92,7 +92,7 @@ The _bam_files_ object should have 4 elements.
 ### 4. Experimental design
 
 Multiple samples should be included in the same profile. Replicates need to be
-combine while controls have to be used as background. The design has to be 
+combined while controls have to be used as background. The design has to be 
 constructed so that `metagene` will process correctly each file.
 
 ```{r produceDesign}
@@ -103,7 +103,7 @@ design
 The `design` uses the value `1` for a dataset and `2` for a control.
 
 
-## 3. _metagene_ analysis
+### 5. _metagene_ analysis
 
 The first step is to create a `metagene` object using `metagene$new()` 
 function. The goal of this first _metagene_ step is to extract the coverage 
@@ -122,7 +122,7 @@ mg <- metagene$new(regions = regions, bam_files = bam_files, cores = 2)
 ```
 
 
-## 4. _metagene_ graph TssA vs TssBis
+### 6. _metagene_ graph TssA vs TssBis
 
 The `plot()` function allows us to create a _metagene_ graph. By default, the 
 graph will contain a profile for each combination of group of regions and BAM 
@@ -135,15 +135,19 @@ samples column that contains the names of the BAM files, there is only one
 column in the `design` object. This means that there will only be 1 profile 
 plotted for each group of regions (2 profiles in this example).
 
+The `metagene` object can be saved and reused.
+
 ```{r produceGraph}
 df <- mg$plot(design = design, bin_size = 10)
 save(mg, file = "mg.RData")
 ```
 
-The `metagene` object can be saved and reused.
+_metagene_ has statistically detected differences between the TssA and TssBiv 
+groups using Friedman rank sum test. Evenmore, _metagene_ has robustly
+computed conﬁdence intervals (CI) of the estimators (mean) for each bin using 
+a bootstrap method.
 
-
-### 5. _metagene_ graph TssA only
+### 7. _metagene_ graph TssA only
 
 If we only wanted to plot the profile for one group of region, we could have
 specified it using the `regions_group` parameter. This parameter is a vector of
