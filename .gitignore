@@ -3,6 +3,7 @@
 .RData
 packrat/lib*/
 packrat/src*/
+packrat/bundle*/
 .Rbuildignore
 inst/extdata/E114_18_core_K27ac_mnemonics.bed.gz
 *.bam*
