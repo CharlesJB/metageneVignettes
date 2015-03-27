@@ -364,6 +364,16 @@ Version: 1.2-1
 Hash: 5a8c432c5551326579b150e8d0c4d458
 Requires: base64enc
 
+Package: similaRpeak
+Source: github
+Version: 0.99.2
+Hash: a54ff185f5c381fa93febdfd6f68932b405a7531
+Requires: GenomicAlignments, R6, Rsamtools, rtracklayer
+GithubRepo: similarpeak
+GithubUsername: adeschen
+GithubRef: master
+GithubSha1: a54ff185f5c381fa93febdfd6f68932b405a7531
+
 Package: stringr
 Source: CRAN
 Version: 0.6.2
