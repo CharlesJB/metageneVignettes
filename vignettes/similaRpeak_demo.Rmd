@@ -10,12 +10,12 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-# Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) #
+<center> <h1> Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) </h1> </center>
 
 ## Introduction
 
-The H3K27ac histone mark is normally enriched at active compared to poised 
-transcriptional start sites (TSS) (Roadmap Epigenomics Consortium et al.,2015).
+The H3K27ac histone mark is normally enriched at active transcriptional start 
+sites (TSS) compared to poised TSS (Roadmap Epigenomics Consortium et al.,2015).
 _metagene_  has been used to robustly test for the difference in enrichment of 
 H3K27ac between these two groups of promoter regions in A549 cells. 
 
@@ -33,7 +33,7 @@ DF<-df[["DF"]]
 
 The `data.frame` content can be used to recreate the _metagene_ graph.
 
-```{r graph, fig.height=5, fig.width=7, echo=FALSE}
+```{r graph, fig.height=5, fig.width=7, fig.align='center', echo=FALSE}
 library(ggplot2)
 p <- ggplot(DF, aes(x=position, y=value, ymin=qinf, ymax=qsup))
 p + geom_ribbon(aes(fill=group), alpha=0.3) + 
@@ -51,6 +51,52 @@ library(similaRpeak)
 ```
 
 
+### 3. Calculate metrics using _similaRpeak_
+
+The metrics are calculated using the _similarity_ function which takes 
+as arguments the two profiles vectors and the threshold values.
+
+```{r metrics, collapse=TRUE}
+# H3K27ac_TssA vector
+H3K27ac<-DF$value[DF$group == "H3K27ac_TssA"]
+# H3K27me3_TssA vector
+H3K27me3<-DF$value[DF$group == "H3K27me3_TssA"]
+# Calculate metrics
+metrics <- similarity(H3K27ac, 
+                            H3K27me3, 
+                            ratioAreaThreshold=0.1, 
+                            ratioMaxMaxThreshold=0.01, 
+                            ratioIntersectThreshold=0.1, 
+                            ratioNormalizedIntersectThreshold=0.1,
+                            diffPosMaxThresholdMinValue=0.01, 
+                            diffPosMaxThresholdMaxDiff=100, 
+                            diffPosMaxTolerance=0.01)
+metrics
+```
+
+The `RATIO_AREA` and `RATIO_MAX_MAX` reflect the difference of amplitude 
+between both profiles.  The small `RATIO_INTERSECT` is caused by the small
+values of the H3K27me3 profile. 
+
+The `RATIO_NORMALIZED_INTERSECT` is quite high. However, the graph of the
+normalized histone profiles shows that this value is caused by the relatively
+flat profiles.
+
+```{r graphNorm, echo=FALSE, fig.align='center', fig.height=5, fig.width=7}
+plot(H3K27ac*length(H3K27ac)/sum(H3K27ac, na.rm=TRUE), xaxt = "n", 
+        type="l", col="blue", xlab="", ylab="", ylim=c(0.5, 2.5))
+par(new=TRUE)
+plot(H3K27me3*length(H3K27me3)/sum(H3K27me3, na.rm=TRUE), 
+        type="l", col="darkgreen", xlab="position", 
+        ylab="Normalized Coverage (Coverage/Mean Coverage)", 
+        ylim=c(0.5, 2.5), xaxt = "n")
+legend("topright", c("H3K27ac_TssA","H3K4me1_TssA"), cex=1.2, 
+        col=c("blue","darkgreen"), lty=1)
+```
+
+In conclusion, the profile of H3K27ac histone mark in active transcriptional 
+start sites (TSS) compared to poised TSS are not sharing any of the tested 
+patterns.
 
 ## References 
 
