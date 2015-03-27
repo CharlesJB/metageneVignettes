@@ -37,7 +37,7 @@ DF<-results[["DF"]]
 The `data.frame` content can be used to recreate the _metagene_ graph.
 
 ```{r graph, fig.height=5, fig.width=7, fig.align='center', echo=FALSE}
-library(ggplot2)
+suppressMessages(library(ggplot2))
 p <- ggplot(DF, aes(x=position, y=value, ymin=qinf, ymax=qsup))
 p + geom_ribbon(aes(fill=group), alpha=0.3) + 
     geom_line(aes(color=group), size=1, litype=1, bg="transparent") +
