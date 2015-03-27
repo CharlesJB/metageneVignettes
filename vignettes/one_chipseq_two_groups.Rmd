@@ -156,7 +156,9 @@ the names of the regions we want to keep for the current `metagene` plot. The
 
 ```{r produceGraphTssA}
 df <- mg$plot(design = design, regions_group = "TssA")
-save(df, file = "df.RData")
+# We could save the list returned by the plot() function and
+# use it to create a new graph
+# save(df, file = "df.RData")
 ```
 
 Note: When a `GRangesList` object is used for the group of regions in
