@@ -1,0 +1,133 @@
+---
+title: "SimilaRpeak: Similarity of ChIP-seq profiles "
+author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, 
+Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Design: One group of regions in two ChIP-Seq}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+<center> <h1>  Comparison of H3K27ac profile and H3K4me1 profile in region chr7:61968807-61969730 </h1> </center>
+
+## Introduction
+
+Highly active enhancer regions are thought to be important for the cell fate 
+(Andersson et al. 2014, FANTOM5 consortium, Hnisz et al. 2013). Highly active 
+enhancers regions have been selected in GM12878 cells. Similarity of ChIP-seq 
+profiles has been tested using two histone post-transcriptional modifications 
+linked to highly active enhancers H3K27ac (DCC accession: ENCFF000ASG) and 
+H3K4me1 (DCC accession: ENCFF000ARY) from the Encyclopedia of DNA Elements 
+(ENCODE) data (Dunham I et al. 2012). Accordingly with the literature, 
+similarity between the profiles of these two histone marks has been identified.
+
+
+### 1. Loading _similaRpeak_ package 
+
+First, the `similaRpeak` package must be loaded.
+
+```{r libraryLoad, warning=FALSE, collapse=TRUE}
+library(similaRpeak)
+```
+
+
+### 2. Loading profiles data
+
+A region, chr7:61968807-61969730, shows interesting profiles for both histones.
+Let's load the data for this region.
+
+```{r profiles, collapse=TRUE}
+data(chr7Profiles)
+str(chr7Profiles)
+```
+
+H3K27ac and H3K4me1 profiles have those shapes:
+
+```{r graphProfiles, echo=FALSE, fig.align='center', fig.height=6, fig.width=7 }
+plot(chr7Profiles$chr7.61968807.61969730$H3K27ac, type="l", col="blue", 
+        xlab="", ylab="", ylim=c(0, 700), main="chr7:61968807-61969730")
+par(new=TRUE)
+plot(chr7Profiles$chr7.61968807.61969730$H3K4me1, type="l", col="darkgreen", 
+        xlab="Position", ylab="Reads per million (RPM)", 
+        ylim=c(0, 700))
+legend("topleft", c("H3K27ac","H3K4me1"), cex=1.2, 
+        col=c("blue","darkgreen"), lty=1)
+```
+**Figure S8. H3K27ac profile versus H3K4me1 profile**
+
+### 3. Calculating metrics with _similaRpeak_
+
+The metrics are calculated using the `similarity` function which takes as 
+arguments the two ChIP-Seq profiles vectors and the threshold values.
+
+```{r metricCalculation}
+metrics <- similarity(chr7Profiles$chr7.61968807.61969730$H3K27ac, 
+                            chr7Profiles$chr7.61968807.61969730$H3K4me1, 
+                            ratioAreaThreshold=5, 
+                            ratioMaxMaxThreshold=2, 
+                            ratioIntersectThreshold=5, 
+                            ratioNormalizedIntersectThreshold=2,
+                            diffPosMaxThresholdMinValue=10, 
+                            diffPosMaxThresholdMaxDiff=100, 
+                            diffPosMaxTolerance=0.01)
+```
+
+The `similarity` function returns a list which contains the general 
+information about both ChIP-Seq profiles and a list of all calculated metrics. 
+
+```{r metricReturn, collapse=TRUE}
+metrics
+```
+
+Each specific information can be directly accessed. Some examples:
+
+```{r getInfo, collapse=TRUE}
+metrics$areaProfile1
+metrics$areaProfile2
+metrics$metrics$RATIO_INTERSECT
+```
+
+The **RATIO_INTERSECT** value of `r round(metrics$metrics$RATIO_INTERSECT, 2)` 
+and the **RATIO_MAX_MAX** value of `r round(metrics$metrics$RATIO_MAX_MAX, 2)` 
+are quite low. Both values can be explained by the large difference in 
+coverage between profiles. Those values could be interpreted as two profiles 
+with low level of similarity. However, the **RATIO_NORMALIZED_INTERSECT** of 
+`r round(metrics$metrics$RATIO_NORMALIZED_INTERSECT, 2)` is much closer to 1. 
+It could be a sign that the profiles, once normalized, are quite similar.
+This hypothesis can be validated by looking at a graph of the normalized
+profiles :
+
+```{r graphProfilesNorm, echo=FALSE, fig.align='center', fig.height=6, fig.width=7 }
+plot(chr7Profiles$chr7.61968807.61969730$H3K27ac*
+        length(chr7Profiles$chr7.61968807.61969730$H3K27ac)/
+        sum(chr7Profiles$chr7.61968807.61969730$H3K27ac, na.rm=TRUE), 
+        type="l", col="blue", xlab="", ylab="", ylim=c(0, 3.5))
+par(new=TRUE)
+plot(chr7Profiles$chr7.61968807.61969730$H3K4me1*
+        length(chr7Profiles$chr7.61968807.61969730$H3K4me1)/
+        sum(chr7Profiles$chr7.61968807.61969730$H3K4me1, na.rm=TRUE), 
+        type="l", col="darkgreen", xlab="Position", 
+        ylab="Normalized Coverage (Coverage/Mean Coverage)", 
+        ylim=c(0, 3.5))
+legend("topleft", c("H3K27ac","H3K4me1"), cex=1.2, 
+        col=c("blue","darkgreen"), lty=1)
+```
+**Figure S9. Normalized H3K27ac profile versus normlized H3K4me1 profile**
+
+## References
+
+Andersson R, Gebhard C, Miguel-Escalada I, Hoof I, Bornholdt J, et al. (2014) 
+An atlas of active enhancers across human cell types and tissues. Nature, 
+507(7493), 455-461.
+
+Dunham I, Kundaje A, Aldred SF, et al. An integrated encyclopedia of DNA 
+elements in the human genome. Nature. 2012 Sep 6;489(7414):57-74.
+
+Forrest AR, Kawaji H, Rehli M, Baillie JK, de Hoon MJ, et al. (2014) A 
+promoter-level mammalian expression atlas. Nature, 507(7493):462-470.
+
+Hnisz D, Abraham BJ, Lee TI, Lau A, Saint-André V, et al. (2013) 
+Super-enhancers in the control of cell identity and disease. Cell, 
+155(4), 934-947.
