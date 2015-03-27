@@ -29,9 +29,9 @@ found here : <br>
 In R, we must first load the _packrat_ package, which enable data usage, and 
 _metagene_ package:
 
-```{r loadPackage}
+```{r loadPackage, collapse=TRUE}
 suppressMessages(library(packrat))
-#packrat::on("../")
+packrat::on("../")
 suppressMessages(library(metagene))
 ```
 
@@ -134,10 +134,15 @@ In this case, we only want to produce a profile for each histone mark (i.e. we
 want to combine the replicates). The groups of BAM files have already been 
 defined in the `design` object (see step 4). 
 
+
+```{r produceGraph, collapse=TRUE}
+df <- mg$plot(design = design, bin_size = 10)
+```
+**Figure S5. H3K27ac versus H3K27me3**
+
 The `list` returned by the `plot()` function can be saved and reused.
 
-```{r produceGraph}
-df <- mg$plot(design = design, bin_size = 10)
+```{r save}
 # We could save the list returned by the plot() function and
 # use it to create a new graph
 # save(df, file = "df.RData")

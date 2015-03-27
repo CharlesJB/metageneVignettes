@@ -1,6 +1,7 @@
 ---
 title: "Design: Two groups of regions in one ChIP-Seq"
-author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
+author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, 
+Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,7 +10,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-# Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) #
+<center> <h1> Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) </h1> </center>
 
 ## Introduction
 
@@ -33,7 +34,7 @@ information about those data can be found here : <br>
 In R, we must first load the _packrat_ package, which enable data usage, and 
 _metagene_ package:
 
-```{r loadPackage}
+```{r loadPackage, collapse=TRUE}
 suppressMessages(library(packrat))
 packrat::on("../")
 suppressMessages(library(metagene))
@@ -70,7 +71,7 @@ regions
 
 ### 3. Loading ChIP-Seq datasets
 
-r the ChIP-Seq of the H3K27ac histone mark, we will use the `ENCFF000AKF`, 
+For the ChIP-Seq of the H3K27ac histone mark, we will use the `ENCFF000AKF`, 
 `ENCFF000AKI`, `ENCFF000AHC` and  `ENCFF000AHD` files from ENCODE 
 (ENCODE Project Consortium, 2012). 
 
@@ -137,10 +138,10 @@ plotted for each group of regions (2 profiles in this example).
 
 The `metagene` object can be saved and reused.
 
-```{r produceGraph}
+```{r produceGraph, fig.align='center'}
 df <- mg$plot(design = design, bin_size = 10)
-save(mg, file = "mg.RData")
 ```
+**Figure S1. H3K27ac TssA vers H3K27ac TssBiv**
 
 _metagene_ has statistically detected differences between the TssA and TssBiv 
 groups using Friedman rank sum test. Evenmore, _metagene_ has robustly
@@ -151,16 +152,20 @@ a bootstrap method.
 
 If we only wanted to plot the profile for one group of region, we could have
 specified it using the `regions_group` parameter. This parameter is a vector of
-the names of the regions we want to keep for the current `metagene` plot. The 
-`list` returned by the `plot()` function can be saved and reused.
+the names of the regions we want to keep for the current `metagene` plot. 
 
-```{r produceGraphTssA}
+```{r produceGraphTssA, fig.align='center', collapse=TRUE}
 df <- mg$plot(design = design, regions_group = "TssA")
+```
+**Figure S2. H3K27ac TssA**
+
+The `list` returned by the `plot()` function can be saved and reused.
+
+```{r save}
 # We could save the list returned by the plot() function and
 # use it to create a new graph
 # save(df, file = "df.RData")
 ```
-
 Note: When a `GRangesList` object is used for the group of regions in
 the `new()` function, the exact same name as to be used in the `plot()` 
 function for the `regions_group` parameter. If we specified a vector of 

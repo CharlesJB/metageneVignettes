@@ -23,11 +23,12 @@ H3K27ac between these two groups of promoter regions in A549 cells.
 ### 1. Load _metagene_ results data
 
 The results have been saved in a `list` that can be loaded and used by 
-`similaRpeak`. The `list` contains 2 elements: a `data.frame` and a Friedman test 
-results. Only the `data.frame` is needed.
+`similaRpeak`. The `list` contains 2 elements: a `data.frame` and a Friedman 
+test results. Only the `data.frame` is needed.
 
 ```{r loadData}
 load("../data/df.RData")
+# Extract data.frame 
 DF<-df[["DF"]]
 ```
 
@@ -39,8 +40,9 @@ p <- ggplot(DF, aes(x=position, y=value, ymin=qinf, ymax=qsup))
 p + geom_ribbon(aes(fill=group), alpha=0.3) + 
     geom_line(aes(color=group), size=1, litype=1, bg="transparent") +
     ylab("Reads per million (RPM)") 
-
 ```
+**Figure S3. H3K27ac TssA versus H3K27ac TssBiv**
+
 
 ### 2. Load _similaRpeak_ package
 
@@ -93,6 +95,7 @@ plot(H3K27me3*length(H3K27me3)/sum(H3K27me3, na.rm=TRUE),
 legend("topright", c("H3K27ac_TssA","H3K4me1_TssA"), cex=1.2, 
         col=c("blue","darkgreen"), lty=1)
 ```
+**Figure S4. Normalized H3K27ac TssA versus normalized H3K27ac TssBiv**
 
 In conclusion, the profile of H3K27ac histone mark in active transcriptional 
 start sites (TSS) compared to poised TSS are not sharing any of the tested 
