@@ -1,28 +1,59 @@
 ---
-title: "Metagene: Using metagene output to compare profiles"
+title: "similaRpeak: Using metagene output to compare profiles"
 author: "Charles Joly Beauparlant, Fabien C. Lamaze, Astrid L. Deschênes, 
 Rawane Samb, Elsa Bernatchez, Pascal Belleau, Steve Bilodeau and Arnaud Droit"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Design: One group of regions in two ChIP-Seq}
+  %\VignetteIndexEntry{similaRpeak: Using metagene output to compare profiles}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
+# Enrichment of the H3K27ac histone mark in active and bivalent transcription start sites (TSS) #
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Introduction
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+The H3K27ac histone mark is normally enriched at active compared to poised 
+transcriptional start sites (TSS) (Roadmap Epigenomics Consortium et al.,2015).
+_metagene_  has been used to robustly test for the difference in enrichment of 
+H3K27ac between these two groups of promoter regions in A549 cells. 
 
-```{r}
-summary(cars)
+
+### 1. Load _metagene_ results data
+
+The results have been saved in a `list` that can be loaded and used by 
+`similaRpeak`. The `list` contains 2 elements: a `data.frame` and a Friedman test 
+results. Only the `data.frame` is needed.
+
+```{r loadData}
+load("../data/df.RData")
+DF<-df[["DF"]]
 ```
 
-You can also embed plots, for example:
+The `data.frame` content can be used to recreate the _metagene_ graph.
 
-```{r, echo=FALSE}
-plot(cars)
+```{r graph, fig.height=5, fig.width=7, echo=FALSE}
+library(ggplot2)
+p <- ggplot(DF, aes(x=position, y=value, ymin=qinf, ymax=qsup))
+p + geom_ribbon(aes(fill=group), alpha=0.3) + 
+    geom_line(aes(color=group), size=1, litype=1, bg="transparent") +
+    ylab("Reads per million (RPM)") 
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### 2. Load _similaRpeak_ package
+
+The _similaRpeak_ package must be loaded.
+
+```{r loadPackage, warning=FALSE, collapse=TRUE}
+library(similaRpeak)
+```
+
+
+
+## References 
+
+Roadmap Epigenomics Consortium et al. (2015). Integrative analysis of 111 
+reference human epigenomes. Nature, 518: 317–330.
+
